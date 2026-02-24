@@ -48,9 +48,31 @@ mysql -h 192.168.5.21 -P 3306 -u dam -pdam123 tienda_calzado
 
 ## Base de Datos
 
-La base de datos **tienda_calzado** contiene información sobre una cadena de tiendas de calzado:
+El servidor contiene **múltiples bases de datos (schemas)** a las que tienes acceso:
 
-### Tablas Disponibles:
+### Schemas Disponibles:
+- **tienda_calzado**: Información sobre una cadena de tiendas de calzado
+- *(Pueden haber más schemas disponibles - pregunta a tu profesor)*
+
+### Cómo ver todos los schemas disponibles:
+```sql
+SHOW DATABASES;
+```
+
+### Cómo cambiar entre diferentes schemas:
+```sql
+-- Usar el schema de tienda de calzado
+USE tienda_calzado;
+SHOW TABLES;
+
+-- O cualquier otro schema disponible
+USE nombre_otro_schema;
+SHOW TABLES;
+```
+
+### Schema: tienda_calzado
+
+Contiene las siguientes tablas:
 - **POBLACIONES**: Códigos postales y localidades
 - **TIENDAS**: Tiendas de la cadena
 - **PROVEEDORES**: Proveedores de calzado

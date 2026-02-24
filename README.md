@@ -1,8 +1,11 @@
 # Servidor de Base de Datos para Alumnos
 
-Este proyecto despliega una base de datos MySQL con Docker Compose para que los alumnos puedan conectarse y realizar consultas.
+Este proyecto despliega un servidor MySQL con Docker Compose para que los alumnos puedan conectarse y realizar consultas.
 
-**✨ Sistema flexible**: Puedes desplegar cualquier base de datos simplemente agregando el archivo SQL a la carpeta `Creaciones/` y configurando el archivo `.env`
+**✨ Sistema flexible con múltiples schemas**: 
+- Despliega **todos los schemas/bases de datos** que agregues a la carpeta `Creaciones/`
+- Detección automática de schemas en archivos SQL
+- El usuario de solo lectura tiene acceso a **TODOS** los schemas automáticamente
 
 ## Configuración Inicial
 
@@ -13,10 +16,12 @@ cp .env.example .env
 
 ### 2. Editar la configuración
 Abre el archivo `.env` y configura:
-- `DB_NAME`: Nombre de la base de datos a crear
 - `DB_USER`: Usuario de solo lectura para los alumnos
 - `DB_PASSWORD`: Contraseña del usuario
 - `MYSQL_PORT`: Puerto a exponer (por defecto 3306)
+- `MYSQL_ROOT_PASSWORD`: Contraseña de root (para administración)
+
+**No necesitas especificar nombres de bases de datos** - se detectan automáticamente desde los archivos SQL.
 
 ### 3. Preparar los archivos
 ```bash
@@ -24,7 +29,9 @@ chmod +x preparar.sh
 ./preparar.sh
 ```
 
-Este script generará automáticamente el archivo de creación de usuario basándose en tu configuración.
+Este script:
+- Detecta automáticamente todos los schemas en tus archivos SQL
+- Genera el archivo de creación de usuario con permisos para TODOS los schemas
 
 ## Datos de Conexión para los Alumnos
 
@@ -106,7 +113,7 @@ La base de datos contiene información sobre una cadena de tiendas de calzado co
 - Para resetear los datos, detén el contenedor y elimina el volumen con `docker compose down -v`
 - Asegúrate de que el puerto 3306 esté abierto en el firewall del servidor
 
-## Agregar una Nueva Base de Datos
+## Agregar Nuevos Schemas/Bases de Datos
 
 ### Opción 1: Script Asistido (Recomendado)
 ```bash
@@ -114,7 +121,7 @@ chmod +x agregar-bd.sh
 ./agregar-bd.sh
 ```
 
-El script te guiará paso a paso.
+El script te guiará paso a paso y verificará que el archivo SQL contenga las definiciones necesarias.
 
 ### Opción 2: Manual
 
@@ -123,29 +130,29 @@ El script te guiará paso a paso.
    cp /ruta/a/tu/archivo.sql Creaciones/
    ```
 
-2. **Asegúrate de que el archivo SQL use el nombre correcto de la base de datos**
+2. **Asegúrate de que el archivo SQL defina el schema**
    
    El archivo debe incluir:
    ```sql
    -- Al inicio del archivo
-   USE nombre_base_datos;
+   CREATE DATABASE IF NOT EXISTS nombre_schema;
+   USE nombre_schema;
    
-   -- O crear la base de datos si no existe
-   CREATE DATABASE IF NOT EXISTS nombre_base_datos;
-   USE nombre_base_datos;
+   -- Luego tus tablas y datos...
+   CREATE TABLE mi_tabla (
+       id INT PRIMARY KEY,
+       ...
+   );
    ```
 
-3. **Actualiza el archivo .env**
-   ```bash
-   DB_NAME=nombre_base_datos
-   ```
-
-4. **Prepara los archivos**
+3. **Prepara los archivos (detecta schemas automáticamente)**
    ```bash
    ./preparar.sh
    ```
+   
+   Este comando detectará automáticamente el nuevo schema y agregará los permisos.
 
-5. **Reinicia el contenedor**
+4. **Reinicia el contenedor**
    ```bash
    docker compose down -v
    docker compose up -d
@@ -160,12 +167,36 @@ Los archivos SQL en `Creaciones/` se ejecutan en **orden alfabético**:
 
 **💡 Tip**: Usa prefijos numéricos para controlar el orden de ejecución.
 
-## Cambiar entre Diferentes Bases de Datos
+## Múltiples Schemas Simultáneos
+
+**✨ Todos los schemas se despliegan simultáneamente:**
 
 Si tienes múltiples archivos SQL en `Creaciones/`:
 
-1. Edita `.env` y cambia `DB_NAME` al nombre de la base de datos que deseas usar
-2. Ejecuta `./preparar.sh` para regenerar el script de usuario
-3. Reinicia el contenedor: `docker compose down -v && docker compose up -d`
+```
+Creaciones/
+├── tienda_calzado.sql      → Crea schema 'tienda_calzado'
+├── biblioteca.sql          → Crea schema 'biblioteca'
+├── hospital.sql            → Crea schema 'hospital'
+└── ZZ-create-user.sql      → Generado automáticamente
+```
+
+Todos se crean y están disponibles simultáneamente. Los alumnos pueden:
+
+```sql
+-- Ver todos los schemas disponibles
+SHOW DATABASES;
+
+-- Cambiar entre schemas
+USE tienda_calzado;
+SELECT * FROM TIENDAS;
+
+USE biblioteca;
+SELECT * FROM libros;
+```
+
+**Cada vez que agregues un nuevo archivo SQL:**
+1. Ejecuta `./preparar.sh` para actualizar permisos
+2. Reinicia: `docker compose down -v && docker compose up -d`
 
 **⚠️ Advertencia**: `docker compose down -v` eliminará todos los datos existentes.

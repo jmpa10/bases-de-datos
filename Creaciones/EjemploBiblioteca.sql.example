@@ -1,0 +1,57 @@
+-- Ejemplo de archivo SQL con otro schema
+-- Este archivo demuestra cómo agregar múltiples schemas al servidor
+
+CREATE DATABASE IF NOT EXISTS biblioteca;
+USE biblioteca;
+
+-- Eliminar tablas si existen
+DROP TABLE IF EXISTS prestamos;
+DROP TABLE IF EXISTS libros;
+DROP TABLE IF EXISTS autores;
+
+-- Crear tablas
+CREATE TABLE autores (
+    id_autor INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    nacionalidad VARCHAR(50)
+);
+
+CREATE TABLE libros (
+    id_libro INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(200) NOT NULL,
+    id_autor INT,
+    isbn VARCHAR(13),
+    anio_publicacion YEAR,
+    FOREIGN KEY (id_autor) REFERENCES autores(id_autor)
+);
+
+CREATE TABLE prestamos (
+    id_prestamo INT AUTO_INCREMENT PRIMARY KEY,
+    id_libro INT,
+    nombre_usuario VARCHAR(100) NOT NULL,
+    fecha_prestamo DATE NOT NULL,
+    fecha_devolucion DATE,
+    FOREIGN KEY (id_libro) REFERENCES libros(id_libro)
+);
+
+-- Insertar datos de ejemplo
+INSERT INTO autores (nombre, nacionalidad) VALUES
+('Gabriel García Márquez', 'Colombia'),
+('Isabel Allende', 'Chile'),
+('Mario Vargas Llosa', 'Perú'),
+('Jorge Luis Borges', 'Argentina'),
+('Pablo Neruda', 'Chile');
+
+INSERT INTO libros (titulo, id_autor, isbn, anio_publicacion) VALUES
+('Cien años de soledad', 1, '9780307474728', 1967),
+('El amor en los tiempos del cólera', 1, '9788497592451', 1985),
+('La casa de los espíritus', 2, '9788497592444', 1982),
+('La ciudad y los perros', 3, '9788420412146', 1963),
+('Ficciones', 4, '9788426140296', 1944),
+('Veinte poemas de amor', 5, '9788437604817', 1924);
+
+INSERT INTO prestamos (id_libro, nombre_usuario, fecha_prestamo, fecha_devolucion) VALUES
+(1, 'Juan Pérez', '2024-02-01', '2024-02-15'),
+(2, 'María García', '2024-02-10', NULL),
+(3, 'Carlos López', '2024-02-15', '2024-02-22'),
+(4, 'Ana Martínez', '2024-02-20', NULL);

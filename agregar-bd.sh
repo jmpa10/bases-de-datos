@@ -5,7 +5,7 @@
 set -e
 
 echo "=========================================="
-echo "📦 Agregar Nueva Base de Datos"
+echo "📦 Agregar Nuevo Schema/Base de Datos"
 echo "=========================================="
 echo ""
 
@@ -16,16 +16,6 @@ read -r sql_file
 # Verificar que el archivo existe
 if [ ! -f "$sql_file" ]; then
     echo "❌ Error: El archivo '$sql_file' no existe"
-    exit 1
-fi
-
-# Preguntar por el nombre de la base de datos
-echo ""
-echo "🏷️  Ingresa el nombre de la base de datos (ej: mi_base_datos):"
-read -r db_name
-
-if [ -z "$db_name" ]; then
-    echo "❌ Error: El nombre de la base de datos no puede estar vacío"
     exit 1
 fi
 
@@ -40,30 +30,40 @@ cp "$sql_file" "Creaciones/$filename"
 echo "   ✅ Archivo copiado"
 echo ""
 
-# Preguntar si quiere actualizar el .env
-echo "¿Deseas actualizar el archivo .env para usar esta base de datos? (s/n)"
-read -r update_env
-
-if [ "$update_env" = "s" ] || [ "$update_env" = "S" ]; then
-    # Actualizar DB_NAME en .env
-    if [ -f ".env" ]; then
-        sed -i.bak "s/^DB_NAME=.*/DB_NAME=$db_name/" .env
-        echo "   ✅ Archivo .env actualizado"
-        echo "   📝 DB_NAME=$db_name"
-    else
-        echo "   ⚠️  No se encontró el archivo .env"
-        echo "   📝 Crea uno con: cp .env.example .env"
+# Verificar si el archivo tiene CREATE DATABASE o USE
+echo "🔍 Verificando contenido del archivo SQL..."
+if grep -qiE "(CREATE DATABASE|USE) " "Creaciones/$filename"; then
+    echo "   ✅ El archivo contiene definiciones de schema/database"
+    # Mostrar los schemas detectados
+    SCHEMAS=$(grep -hioE "(CREATE DATABASE|USE) (IF NOT EXISTS )?[\`]?[a-zA-Z0-9_]+[\`]?" "Creaciones/$filename" | \
+             grep -ioE "[\`]?[a-zA-Z0-9_]+[\`]?$" | \
+             tr -d '`' | \
+             grep -vE "^(IF|NOT|EXISTS)$" | \
+             sort -u)
+    
+    if [ -n "$SCHEMAS" ]; then
+        echo "   📊 Schemas detectados en el archivo:"
+        for schema in $SCHEMAS; do
+            echo "      - $schema"
+        done
     fi
+else
+    echo "   ⚠️  Advertencia: No se detectó CREATE DATABASE ni USE en el archivo"
+    echo "   💡 Asegúrate de agregar al inicio de tu archivo SQL:"
+    echo ""
+    echo "      CREATE DATABASE IF NOT EXISTS nombre_schema;"
+    echo "      USE nombre_schema;"
+    echo ""
 fi
 
 echo ""
 echo "=========================================="
-echo "✅ Base de datos agregada"
+echo "✅ Schema agregado"
 echo "=========================================="
 echo ""
 echo "📝 Próximos pasos:"
-echo "   1. Edita el archivo Creaciones/$filename si es necesario"
-echo "   2. Asegúrate de que el archivo use CREATE DATABASE o USE $db_name"
-echo "   3. Ejecuta: ./preparar.sh"
-echo "   4. Reinicia el contenedor: docker compose down -v && docker compose up -d"
+echo "   1. Ejecuta: ./preparar.sh (para detectar schemas y generar permisos)"
+echo "   2. Reinicia el contenedor: docker compose down -v && docker compose up -d"
+echo ""
+echo "💡 El usuario '$DB_USER' (definido en .env) tendrá acceso SELECT a TODOS los schemas"
 echo ""
