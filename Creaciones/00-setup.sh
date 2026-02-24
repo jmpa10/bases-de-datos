@@ -44,11 +44,12 @@ fi
 echo ""
 echo "🔨 Generando script de creación de usuario..."
 
-# Generar el script SQL completo
-cat > "$SQL_DIR/ZZZ-create-user.sql" <<EOF
+# Generar el script SQL en /tmp (el directorio Creaciones/ puede ser read-only)
+TMP_SQL="/tmp/create-user-$$.sql"
+
+cat > "$TMP_SQL" <<EOF
 -- Script de inicialización para crear el usuario de solo lectura
 -- Este archivo se genera automáticamente al iniciar el contenedor
--- NO EDITAR - se regenera cada vez que se recrea el contenedor
 
 -- Crear el usuario $USER para conexiones remotas y locales
 CREATE USER IF NOT EXISTS '$USER'@'%' IDENTIFIED WITH mysql_native_password BY '$PASS';
@@ -59,7 +60,7 @@ EOF
 # Agregar permisos para cada schema detectado
 if [ -n "$DATABASES" ]; then
     for db in $DATABASES; do
-        cat >> "$SQL_DIR/ZZZ-create-user.sql" <<EOF
+        cat >> "$TMP_SQL" <<EOF
 -- Otorgar permisos de solo lectura en el schema: ${db}
 GRANT SELECT ON ${db}.* TO '$USER'@'%';
 GRANT SELECT ON ${db}.* TO '$USER'@'localhost';
@@ -67,14 +68,14 @@ GRANT SELECT ON ${db}.* TO '$USER'@'localhost';
 EOF
     done
 else
-    cat >> "$SQL_DIR/ZZZ-create-user.sql" <<EOF
+    cat >> "$TMP_SQL" <<EOF
 -- No se detectaron schemas automáticamente
 -- El usuario se creó sin permisos específicos
 
 EOF
 fi
 
-cat >> "$SQL_DIR/ZZZ-create-user.sql" <<EOF
+cat >> "$TMP_SQL" <<EOF
 -- Aplicar los cambios
 FLUSH PRIVILEGES;
 
@@ -82,7 +83,11 @@ FLUSH PRIVILEGES;
 SELECT CONCAT('✅ Usuario $USER creado con permisos de solo lectura') AS Estado;
 EOF
 
-echo "   ✅ Script generado: ZZZ-create-user.sql"
+echo "   ✅ Script generado: $TMP_SQL"
+
+# También generar una copia de referencia (si tenemos permisos)
+cat "$TMP_SQL" > "$SQL_DIR/ZZZ-create-user.sql" 2>/dev/null || true
+
 echo ""
 
 if [ -n "$DATABASES" ]; then
@@ -95,7 +100,7 @@ fi
 
 # 🔥 EJECUTAR el archivo SQL generado inmediatamente
 echo "🔧 Ejecutando script de creación de usuario..."
-if [ -f "$SQL_DIR/ZZZ-create-user.sql" ]; then
+if [ -f "$TMP_SQL" ]; then
     # Esperar a que MySQL esté listo (usa socket unix durante init)
     echo "   ⏳ Esperando a que MySQL esté listo..."
     for i in {1..30}; do
@@ -112,14 +117,17 @@ if [ -f "$SQL_DIR/ZZZ-create-user.sql" ]; then
     
     # Ejecutar el SQL usando socket unix (más confiable durante init)
     echo "   📝 Creando usuario y permisos..."
-    if mysql --protocol=socket -uroot -p"${MYSQL_ROOT_PASSWORD}" < "$SQL_DIR/ZZZ-create-user.sql" 2>&1 | grep -v "Warning.*password"; then
+    if mysql --protocol=socket -uroot -p"${MYSQL_ROOT_PASSWORD}" < "$TMP_SQL" 2>&1 | grep -v "Warning.*password"; then
         echo "   ✅ Usuario y permisos configurados correctamente"
     else
         echo "   ⚠️  Hubo un problema al crear el usuario"
         # Mostrar el contenido del archivo para debug
-        echo "   📄 Contenido de ZZZ-create-user.sql:"
-        cat "$SQL_DIR/ZZZ-create-user.sql"
+        echo "   📄 Contenido del SQL generado:"
+        cat "$TMP_SQL"
     fi
+    
+    # Limpiar archivo temporal
+    rm -f "$TMP_SQL"
 fi
 
 echo ""
