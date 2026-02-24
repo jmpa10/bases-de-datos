@@ -4,7 +4,7 @@ Este proyecto despliega una base de datos MySQL con Docker Compose para que los 
 
 ## Datos de Conexión para los Alumnos
 
-- **Host**: La IP o dominio de tu servidor
+- **Host**: 192.168.5.21
 - **Puerto**: `3306`
 - **Base de datos**: `tienda_calzado`
 - **Usuario**: `dam`
@@ -42,7 +42,7 @@ docker compose down -v
 
 ### MySQL Workbench
 1. Crear una nueva conexión
-2. Hostname: `IP_DEL_SERVIDOR`
+2. Hostname: `192.168.5.21`
 3. Port: `3306`
 4. Username: `dam`
 5. Password: `dam123` (Store in Keychain)
@@ -50,7 +50,7 @@ docker compose down -v
 
 ### Línea de comandos
 ```bash
-mysql -h IP_DEL_SERVIDOR -P 3306 -u dam -pdam123 tienda_calzado
+mysql -h 192.168.5.21 -P 3306 -u dam -pdam123 tienda_calzado
 ```
 
 ## Permisos del Usuario

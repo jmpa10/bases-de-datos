@@ -5,7 +5,7 @@
 Para conectarte a la base de datos del curso, utiliza los siguientes datos:
 
 ```
-Host/Servidor: [TU_PROFESOR_TE_DARÁ_LA_IP]
+Host/Servidor: 192.168.5.21
 Puerto: 3306
 Base de datos: tienda_calzado
 Usuario: dam
@@ -20,7 +20,7 @@ Contraseña: dam123
 2. Haz clic en el **+** junto a "MySQL Connections"
 3. Rellena los datos:
    - **Connection Name**: Servidor DAM
-   - **Hostname**: [La IP que te proporcione el profesor]
+   - **Hostname**: 192.168.5.21
    - **Port**: 3306
    - **Username**: dam
    - **Password**: Haz clic en "Store in Keychain" y escribe: dam123
@@ -31,7 +31,7 @@ Contraseña: dam123
 ### Opción 2: Línea de Comandos
 
 ```bash
-mysql -h [IP_DEL_SERVIDOR] -P 3306 -u dam -pdam123 tienda_calzado
+mysql -h 192.168.5.21 -P 3306 -u dam -pdam123 tienda_calzado
 ```
 
 ### Opción 3: DBeaver
@@ -39,7 +39,7 @@ mysql -h [IP_DEL_SERVIDOR] -P 3306 -u dam -pdam123 tienda_calzado
 1. Abre DBeaver
 2. Nueva Conexión → MySQL
 3. Rellena:
-   - **Server Host**: [IP del profesor]
+   - **Server Host**: 192.168.5.21
    - **Port**: 3306
    - **Database**: tienda_calzado
    - **Username**: dam
