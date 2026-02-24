@@ -5,7 +5,7 @@
 -- ============================================================
 
 -- Crear la base de datos con UTF-8
-CREATE DATABASE IF NOT EXISTS tienda_calzado
+CREATE SCHEMA IF NOT EXISTS tienda_calzado
     DEFAULT CHARACTER SET utf8mb4
     DEFAULT COLLATE utf8mb4_unicode_ci;
 
