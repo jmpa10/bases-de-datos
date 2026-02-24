@@ -3,6 +3,10 @@
 -- Esquema: Taller / Gestión de Reparaciones
 -- ============================================
 
+-- Configurar la codificación de la conexión a UTF-8
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 CREATE SCHEMA IF NOT EXISTS taller
     DEFAULT CHARACTER SET utf8mb4
     DEFAULT COLLATE utf8mb4_unicode_ci;

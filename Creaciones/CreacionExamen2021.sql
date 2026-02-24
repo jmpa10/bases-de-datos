@@ -4,6 +4,10 @@
 -- SCRIPT COMPLETO Y CORREGIDO (v4 - UTF-8)
 -- ============================================================
 
+-- Configurar la codificación de la conexión a UTF-8
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 -- Crear la base de datos con UTF-8
 CREATE SCHEMA IF NOT EXISTS tienda_calzado
     DEFAULT CHARACTER SET utf8mb4
