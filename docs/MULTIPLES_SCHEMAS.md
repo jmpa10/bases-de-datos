@@ -39,7 +39,7 @@ CREATE TABLE autores (...);
 
 ### 3. Detección Automática
 
-Al ejecutar `./preparar.sh`, el script:
+Al ejecutar `./scripts/preparar.sh`, el script:
 - ✅ Escanea todos los archivos `.sql` en `Creaciones/`
 - ✅ Detecta automáticamente los schemas definidos
 - ✅ Genera permisos para el usuario en **TODOS** los schemas
@@ -47,7 +47,7 @@ Al ejecutar `./preparar.sh`, el script:
 Ejemplo de salida:
 
 ```bash
-$ ./preparar.sh
+$ ./scripts/preparar.sh
 
 🔍 Detectando schemas en archivos SQL...
    ✅ Schemas detectados:
@@ -102,7 +102,7 @@ SELECT * FROM pacientes;
 cp ~/Downloads/biblioteca.sql Creaciones/
 
 # 2. Preparar (detecta automáticamente)
-./preparar.sh
+./scripts/preparar.sh
 
 # 3. Aplicar cambios
 docker compose down -v && docker compose up -d
@@ -115,7 +115,7 @@ docker compose down -v && docker compose up -d
 cp ~/curso/*.sql Creaciones/
 
 # Preparar (detecta todos automáticamente)
-./preparar.sh
+./scripts/preparar.sh
 
 # Aplicar
 docker compose down -v && docker compose up -d
@@ -131,7 +131,7 @@ docker compose down -v && docker compose up -d
 
 ## Estructura del Archivo ZZ-create-user.sql Generado
 
-Después de ejecutar `./preparar.sh` con múltiples schemas:
+Después de ejecutar `./scripts/preparar.sh` con múltiples schemas:
 
 ```sql
 -- ZZ-create-user.sql (generado automáticamente)
@@ -172,7 +172,7 @@ mv Creaciones/biblioteca.sql Creaciones/biblioteca.sql.disabled
 rm Creaciones/biblioteca.sql
 
 # Regenerar permisos
-./preparar.sh
+./scripts/preparar.sh
 
 # Aplicar cambios
 docker compose down -v && docker compose up -d
@@ -192,6 +192,6 @@ Ver el archivo `EjemploBiblioteca.sql.example` en la carpeta `Creaciones/` para 
 Para usarlo:
 ```bash
 cp Creaciones/EjemploBiblioteca.sql.example Creaciones/biblioteca.sql
-./preparar.sh
+./scripts/preparar.sh
 docker compose down -v && docker compose up -d
 ```

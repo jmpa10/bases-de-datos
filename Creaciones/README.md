@@ -32,21 +32,20 @@ cp /ruta/a/tu/archivo.sql Creaciones/
 
 ### Opción 2: Usar el script asistente
 ```bash
-../agregar-bd.sh
+../scripts/agregar-bd.sh
 ```
 
 ## ⚠️ Importante
 
-- **Todos los archivos SQL deben incluir `USE nombre_base_datos;`** al inicio
+- **Todos los archivos SQL deben incluir `CREATE DATABASE ... USE nombre_schema;`** al inicio
 - Si creas una nueva base de datos, usa:
   ```sql
-  CREATE DATABASE IF NOT EXISTS nombre_bd;
-  USE nombre_bd;
+  CREATE DATABASE IF NOT EXISTS nombre_schema;
+  USE nombre_schema;
   ```
-- El nombre de la base de datos debe coincidir con `DB_NAME` en el archivo `.env`
 - Para aplicar cambios, ejecuta:
   ```bash
-  ../preparar.sh
+  ../scripts/preparar.sh
   docker compose down -v
   docker compose up -d
   ```
@@ -73,6 +72,6 @@ Para dejar de usar un archivo SQL:
 
 ## 📖 Más Información
 
-- Ver [GUIA_RAPIDA.md](../GUIA_RAPIDA.md) para comandos útiles
-- Ver [EJEMPLO_AGREGAR_BD.md](../EJEMPLO_AGREGAR_BD.md) para ejemplos completos
+- Ver [docs/GUIA_RAPIDA.md](../docs/GUIA_RAPIDA.md) para comandos útiles
+- Ver [docs/EJEMPLO_AGREGAR_BD.md](../docs/EJEMPLO_AGREGAR_BD.md) para ejemplos completos
 - Ver [README.md](../README.md) para documentación completa

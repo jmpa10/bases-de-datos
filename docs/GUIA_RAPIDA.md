@@ -17,7 +17,7 @@ nano .env  # o vim, code, etc.
 chmod +x preparar.sh agregar-bd.sh verificar.sh
 
 # Preparar archivos
-./preparar.sh
+./scripts/preparar.sh
 
 # Levantar el servidor
 docker compose up -d
@@ -25,14 +25,14 @@ docker compose up -d
 
 ### 3. Verificar
 ```bash
-./verificar.sh
+./scripts/verificar.sh
 ```
 
 ## Agregar una Nueva Base de Datos
 
 ### Opción A: Script Asistido 🎯
 ```bash
-./agregar-bd.sh
+./scripts/agregar-bd.sh
 ```
 
 ### Opción B: Manual
@@ -45,7 +45,7 @@ nano .env
 # Cambiar: DB_NAME=nombre_tu_base_datos
 
 # 3. Preparar
-./preparar.sh
+./scripts/preparar.sh
 
 # 4. Reiniciar contenedor
 docker compose down -v
@@ -96,7 +96,7 @@ docker exec -it bbdd_alumnos mysql -uroot -p
 ### Error: Access denied for user
 ```bash
 # Regenerar usuario
-./preparar.sh
+./scripts/preparar.sh
 docker compose down -v
 docker compose up -d
 ```
@@ -135,4 +135,4 @@ MYSQL_ROOT_PASSWORD=V3ry_S3cur3_R00t_P@ss
 
 ---
 
-💡 **Recuerda**: Siempre ejecuta `./preparar.sh` después de cambiar el `.env`
+💡 **Recuerda**: Siempre ejecuta `./scripts/preparar.sh` después de cambiar el `.env`

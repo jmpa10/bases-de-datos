@@ -7,6 +7,38 @@ Este proyecto despliega un servidor MySQL con Docker Compose para que los alumno
 - Detección automática de schemas en archivos SQL
 - El usuario de solo lectura tiene acceso a **TODOS** los schemas automáticamente
 
+## 📁 Estructura del Proyecto
+
+```
+Servidor de BBDD/
+├── 📄 docker-compose.yml        # Configuración de Docker Compose
+├── 📄 .env.example              # Plantilla de configuración
+├── 📄 .env                      # Tu configuración (no se sube a Git)
+├── 📄 .gitignore
+├── 📄 README.md                 # Este archivo
+│
+├── 📂 Creaciones/               # Tus archivos SQL aquí
+│   ├── CreacionExamen2021.sql   # Schema: tienda_calzado
+│   ├── ExamenMarzo2025.sql      # Nuevo schema
+│   ├── *.sql                    # Más schemas...
+│   └── ZZ-create-user.sql       # Generado automáticamente
+│
+├── 📂 scripts/                  # Scripts de gestión
+│   ├── preparar.sh              # Detecta schemas y genera permisos
+│   ├── agregar-bd.sh            # Asistente para agregar schemas
+│   └── verificar.sh             # Verifica que todo funciona
+│
+├── 📂 docs/                     # Documentación
+│   ├── GUIA_RAPIDA.md
+│   ├── MULTIPLES_SCHEMAS.md
+│   ├── EJEMPLO_AGREGAR_BD.md
+│   ├── INSTRUCCIONES_ALUMNOS.md
+│   └── ACTUALIZAR_SERVIDOR.md
+│
+└── 📂 ejemplos/                 # Archivos de ejemplo
+    └── consultas-prueba.sql
+```
+
 ## Configuración Inicial
 
 ### 1. Crear archivo de configuración
@@ -25,8 +57,8 @@ Abre el archivo `.env` y configura:
 
 ### 3. Preparar los archivos
 ```bash
-chmod +x preparar.sh
-./preparar.sh
+chmod +x scripts/*.sh
+./scripts/preparar.sh
 ```
 
 Este script:
@@ -117,8 +149,7 @@ La base de datos contiene información sobre una cadena de tiendas de calzado co
 
 ### Opción 1: Script Asistido (Recomendado)
 ```bash
-chmod +x agregar-bd.sh
-./agregar-bd.sh
+./scripts/agregar-bd.sh
 ```
 
 El script te guiará paso a paso y verificará que el archivo SQL contenga las definiciones necesarias.
@@ -147,7 +178,7 @@ El script te guiará paso a paso y verificará que el archivo SQL contenga las d
 
 3. **Prepara los archivos (detecta schemas automáticamente)**
    ```bash
-   ./preparar.sh
+   ./scripts/preparar.sh
    ```
    
    Este comando detectará automáticamente el nuevo schema y agregará los permisos.
@@ -196,7 +227,7 @@ SELECT * FROM libros;
 ```
 
 **Cada vez que agregues un nuevo archivo SQL:**
-1. Ejecuta `./preparar.sh` para actualizar permisos
+1. Ejecuta `./scripts/preparar.sh` para actualizar permisos
 2. Reinicia: `docker compose down -v && docker compose up -d`
 
 **⚠️ Advertencia**: `docker compose down -v` eliminará todos los datos existentes.

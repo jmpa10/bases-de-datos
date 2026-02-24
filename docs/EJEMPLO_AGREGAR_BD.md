@@ -10,7 +10,7 @@ Tienes un archivo SQL llamado `biblioteca.sql` que crea una base de datos de una
 
 ```bash
 # 1. Ejecutar el script asistente
-./agregar-bd.sh
+./scripts/agregar-bd.sh
 
 # El script te preguntará:
 # "📄 Ingresa la ruta al archivo SQL de la base de datos:"
@@ -23,14 +23,14 @@ biblioteca
 s
 
 # 2. Preparar los archivos
-./preparar.sh
+./scripts/preparar.sh
 
 # 3. Reiniciar el contenedor
 docker compose down -v
 docker compose up -d
 
 # 4. Verificar
-./verificar.sh
+./scripts/verificar.sh
 ```
 
 ## Método 2: Manual (Más Control)
@@ -56,7 +56,7 @@ nano .env
 DB_NAME=biblioteca
 
 # 5. Preparar
-./preparar.sh
+./scripts/preparar.sh
 
 # 6. Reiniciar
 docker compose down -v
@@ -86,7 +86,7 @@ Creaciones/
 DB_NAME=biblioteca
 
 # Preparar y desplegar:
-./preparar.sh
+./scripts/preparar.sh
 docker compose down -v
 docker compose up -d
 ```
@@ -158,7 +158,7 @@ INSERT INTO prestamos (id_libro, nombre_usuario, fecha_prestamo, fecha_devolucio
 nano .env
 # Cambiar: DB_NAME=biblioteca
 
-./preparar.sh
+./scripts/preparar.sh
 docker compose down -v
 docker compose up -d
 
@@ -166,7 +166,7 @@ docker compose up -d
 nano .env
 # Cambiar: DB_NAME=tienda_calzado
 
-./preparar.sh
+./scripts/preparar.sh
 docker compose down -v
 docker compose up -d
 ```
@@ -199,7 +199,7 @@ docker exec -it bbdd_alumnos mysql -udam -pdam123 -e "USE $(grep DB_NAME .env | 
 → Verifica que tu archivo SQL tenga `CREATE DATABASE` o `USE` con el nombre correcto
 
 ### "Access denied"
-→ Ejecuta `./preparar.sh` de nuevo para regenerar el usuario
+→ Ejecuta `./scripts/preparar.sh` de nuevo para regenerar el usuario
 
 ### "Table already exists"
 → Usa `DROP TABLE IF EXISTS` antes de `CREATE TABLE` en tu SQL

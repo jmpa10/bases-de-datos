@@ -5,6 +5,9 @@
 -- Crear el usuario dam
 CREATE USER IF NOT EXISTS 'dam'@'%' IDENTIFIED WITH mysql_native_password BY 'dam123';
 
+-- Otorgar permisos de solo lectura en el schema: taller
+GRANT SELECT ON taller.* TO 'dam'@'%';
+
 -- Otorgar permisos de solo lectura en el schema: tienda_calzado
 GRANT SELECT ON tienda_calzado.* TO 'dam'@'%';
 

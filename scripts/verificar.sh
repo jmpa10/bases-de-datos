@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Cambiar al directorio raíz del proyecto (un nivel arriba del script)
+cd "$(dirname "$0")/.."
+
 echo "=========================================="
 echo "Verificación del Servidor de Base de Datos"
 echo "=========================================="

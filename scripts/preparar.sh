@@ -5,6 +5,9 @@
 
 set -e  # Salir si hay algún error
 
+# Cambiar al directorio raíz del proyecto (un nivel arriba del script)
+cd "$(dirname "$0")/.."
+
 echo "=========================================="
 echo "🔧 Preparación del Servidor de BBDD"
 echo "=========================================="

@@ -4,6 +4,9 @@
 
 set -e
 
+# Cambiar al directorio raíz del proyecto (un nivel arriba del script)
+cd "$(dirname "$0")/.."
+
 echo "=========================================="
 echo "📦 Agregar Nuevo Schema/Base de Datos"
 echo "=========================================="
@@ -62,7 +65,7 @@ echo "✅ Schema agregado"
 echo "=========================================="
 echo ""
 echo "📝 Próximos pasos:"
-echo "   1. Ejecuta: ./preparar.sh (para detectar schemas y generar permisos)"
+echo "   1. Ejecuta: ./scripts/preparar.sh (para detectar schemas y generar permisos)"
 echo "   2. Reinicia el contenedor: docker compose down -v && docker compose up -d"
 echo ""
 echo "💡 El usuario '$DB_USER' (definido en .env) tendrá acceso SELECT a TODOS los schemas"
