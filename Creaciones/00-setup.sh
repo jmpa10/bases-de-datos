@@ -44,7 +44,7 @@ fi
 echo ""
 echo "🔨 Generando script de creación de usuario..."
 
-# Generar el script de creación de usuario
+# Generar el script SQL (para referencia)
 cat > "$SQL_DIR/ZZZ-create-user.sql" <<EOF
 -- Script de inicialización para crear el usuario de solo lectura
 -- Este archivo se genera automáticamente al iniciar el contenedor
@@ -83,6 +83,42 @@ SELECT CONCAT('✅ Usuario $USER creado con permisos de solo lectura') AS Estado
 EOF
 
 echo "   ✅ Script generado: ZZZ-create-user.sql"
+
+# 🔥 EJECUTAR LOS COMANDOS SQL DIRECTAMENTE
+echo ""
+echo "🔧 Creando usuario en MySQL..."
+
+# Esperar a que MySQL esté listo
+until mysql --protocol=socket -uroot -p"${MYSQL_ROOT_PASSWORD}" -e "SELECT 1" > /dev/null 2>&1; do
+    echo "   ⏳ Esperando a MySQL..."
+    sleep 1
+done
+
+# Crear el usuario
+mysql --protocol=socket -uroot -p"${MYSQL_ROOT_PASSWORD}" <<EOSQL
+-- Crear el usuario $USER para conexiones remotas y locales
+CREATE USER IF NOT EXISTS '$USER'@'%' IDENTIFIED WITH mysql_native_password BY '$PASS';
+CREATE USER IF NOT EXISTS '$USER'@'localhost' IDENTIFIED WITH mysql_native_password BY '$PASS';
+EOSQL
+
+echo "   ✅ Usuario creado: $USER"
+
+# Otorgar permisos para cada schema
+if [ -n "$DATABASES" ]; then
+    echo "   🔐 Otorgando permisos SELECT..."
+    for db in $DATABASES; do
+        mysql --protocol=socket -uroot -p"${MYSQL_ROOT_PASSWORD}" <<EOSQL
+GRANT SELECT ON ${db}.* TO '$USER'@'%';
+GRANT SELECT ON ${db}.* TO '$USER'@'localhost';
+EOSQL
+        echo "      - $db"
+    done
+    
+    # Aplicar cambios
+    mysql --protocol=socket -uroot -p"${MYSQL_ROOT_PASSWORD}" -e "FLUSH PRIVILEGES;"
+    echo "   ✅ Permisos aplicados"
+fi
+
 echo ""
 
 if [ -n "$DATABASES" ]; then
