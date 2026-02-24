@@ -1,0 +1,15 @@
+# Docker
+mysql_data/
+
+# Logs
+*.log
+
+# Environment variables (si decides personalizar)
+.env
+
+# macOS
+.DS_Store
+
+# Backups
+*.backup
+*.bak
