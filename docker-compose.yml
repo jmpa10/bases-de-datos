@@ -6,10 +6,12 @@ services:
     container_name: bbdd_alumnos
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword123
-      MYSQL_DATABASE: tienda_calzado
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT}:3306"
     volumes:
       - ./Creaciones:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql

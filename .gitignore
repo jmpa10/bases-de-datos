@@ -4,12 +4,16 @@ mysql_data/
 # Logs
 *.log
 
-# Environment variables (si decides personalizar)
+# Environment variables (contiene credenciales - NO SUBIR)
 .env
+
+# Backup files
+*.backup
+*.bak
+.env.bak
 
 # macOS
 .DS_Store
 
-# Backups
-*.backup
-*.bak
+# Archivos generados automáticamente
+Creaciones/ZZ-create-user.sql
