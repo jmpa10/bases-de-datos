@@ -50,8 +50,9 @@ cat > "$SQL_DIR/ZZZ-create-user.sql" <<EOF
 -- Este archivo se genera automáticamente al iniciar el contenedor
 -- NO EDITAR - se regenera cada vez que se recrea el contenedor
 
--- Crear el usuario $USER
+-- Crear el usuario $USER para conexiones remotas y locales
 CREATE USER IF NOT EXISTS '$USER'@'%' IDENTIFIED WITH mysql_native_password BY '$PASS';
+CREATE USER IF NOT EXISTS '$USER'@'localhost' IDENTIFIED WITH mysql_native_password BY '$PASS';
 
 EOF
 
@@ -61,6 +62,7 @@ if [ -n "$DATABASES" ]; then
         cat >> "$SQL_DIR/ZZZ-create-user.sql" <<EOF
 -- Otorgar permisos de solo lectura en el schema: ${db}
 GRANT SELECT ON ${db}.* TO '$USER'@'%';
+GRANT SELECT ON ${db}.* TO '$USER'@'localhost';
 
 EOF
     done
