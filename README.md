@@ -55,15 +55,12 @@ Abre el archivo `.env` y configura:
 
 **No necesitas especificar nombres de bases de datos** - se detectan automáticamente desde los archivos SQL.
 
-### 3. Preparar los archivos
+### 3. ¡Listo! Levantar el servidor
 ```bash
-chmod +x scripts/*.sh
-./scripts/preparar.sh
+docker compose up -d
 ```
 
-Este script:
-- Detecta automáticamente todos los schemas en tus archivos SQL
-- Genera el archivo de creación de usuario con permisos para TODOS los schemas
+**✨ Automático**: El sistema detecta automáticamente todos los schemas en tus archivos SQL y genera los permisos del usuario. No necesitas ejecutar scripts manualmente.
 
 ## Datos de Conexión para los Alumnos
 
@@ -147,14 +144,7 @@ La base de datos contiene información sobre una cadena de tiendas de calzado co
 
 ## Agregar Nuevos Schemas/Bases de Datos
 
-### Opción 1: Script Asistido (Recomendado)
-```bash
-./scripts/agregar-bd.sh
-```
-
-El script te guiará paso a paso y verificará que el archivo SQL contenga las definiciones necesarias.
-
-### Opción 2: Manual
+### Proceso Automatizado ✨
 
 1. **Copia tu archivo SQL a la carpeta Creaciones/**
    ```bash
@@ -176,27 +166,29 @@ El script te guiará paso a paso y verificará que el archivo SQL contenga las d
    );
    ```
 
-3. **Prepara los archivos (detecta schemas automáticamente)**
-   ```bash
-   ./scripts/preparar.sh
-   ```
-   
-   Este comando detectará automáticamente el nuevo schema y agregará los permisos.
-
-4. **Reinicia el contenedor**
+3. **Reinicia el contenedor**
    ```bash
    docker compose down -v
    docker compose up -d
    ```
 
+**⚡ ¡Todo automático!** El script `Creaciones/00-setup.sh` detectará automáticamente el nuevo schema y configurará los permisos. No necesitas ejecutar ningún script manualmente.
+
+### Opción Alternativa: Script Asistido
+```bash
+./scripts/agregar-bd.sh
+```
+
+El script te guiará paso a paso y verificará que el archivo SQL contenga las definiciones necesarias.
+
 ### Convenciones de Nombres
 
-Los archivos SQL en `Creaciones/` se ejecutan en **orden alfabético**:
-- `01-crear-tablas.sql` se ejecuta primero
-- `02-insertar-datos.sql` se ejecuta después
-- `ZZ-create-user.sql` se ejecuta al final (generado automáticamente)
+Los archivos en `Creaciones/` se ejecutan en **orden alfabético**:
+- `00-setup.sh` se ejecuta primero (detecta schemas y genera permisos)
+- `01-crear-tablas.sql`, `02-insertar-datos.sql`, etc.
+- `ZZZ-create-user.sql` se ejecuta al final (generado automáticamente por 00-setup.sh)
 
-**💡 Tip**: Usa prefijos numéricos para controlar el orden de ejecución.
+**💡 Tip**: Usa prefijos numéricos para controlar el orden de ejecución de tus SQL files.
 
 ## Múltiples Schemas Simultáneos
 
@@ -206,10 +198,11 @@ Si tienes múltiples archivos SQL en `Creaciones/`:
 
 ```
 Creaciones/
+├── 00-setup.sh             → Detecta schemas automáticamente
 ├── tienda_calzado.sql      → Crea schema 'tienda_calzado'
 ├── biblioteca.sql          → Crea schema 'biblioteca'
 ├── hospital.sql            → Crea schema 'hospital'
-└── ZZ-create-user.sql      → Generado automáticamente
+└── ZZZ-create-user.sql     → Generado automáticamente
 ```
 
 Todos se crean y están disponibles simultáneamente. Los alumnos pueden:
@@ -227,7 +220,8 @@ SELECT * FROM libros;
 ```
 
 **Cada vez que agregues un nuevo archivo SQL:**
-1. Ejecuta `./scripts/preparar.sh` para actualizar permisos
+1. Copia el archivo a `Creaciones/`
 2. Reinicia: `docker compose down -v && docker compose up -d`
+3. ¡Listo! El sistema detecta automáticamente el nuevo schema
 
 **⚠️ Advertencia**: `docker compose down -v` eliminará todos los datos existentes.

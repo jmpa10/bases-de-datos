@@ -6,34 +6,7 @@ Este es un ejemplo práctico de cómo agregar una nueva base de datos al servido
 
 Tienes un archivo SQL llamado `biblioteca.sql` que crea una base de datos de una biblioteca con tablas de libros, autores y préstamos.
 
-## Método 1: Script Asistido (Más Fácil)
-
-```bash
-# 1. Ejecutar el script asistente
-./scripts/agregar-bd.sh
-
-# El script te preguntará:
-# "📄 Ingresa la ruta al archivo SQL de la base de datos:"
-/home/profesor/descargas/biblioteca.sql
-
-# "🏷️ Ingresa el nombre de la base de datos (ej: mi_base_datos):"
-biblioteca
-
-# "¿Deseas actualizar el archivo .env para usar esta base de datos? (s/n)"
-s
-
-# 2. Preparar los archivos
-./scripts/preparar.sh
-
-# 3. Reiniciar el contenedor
-docker compose down -v
-docker compose up -d
-
-# 4. Verificar
-./scripts/verificar.sh
-```
-
-## Método 2: Manual (Más Control)
+## Método 1: Proceso Automatizado ⚡ (Recomendado)
 
 ```bash
 # 1. Copiar el archivo a Creaciones/
@@ -42,28 +15,30 @@ cp /home/profesor/descargas/biblioteca.sql Creaciones/
 # 2. (Opcional) Renombrar para controlar orden de ejecución
 mv Creaciones/biblioteca.sql Creaciones/01-biblioteca.sql
 
-# 3. Verificar que el archivo SQL use el nombre correcto
+# 3. Verificar que el archivo SQL tenga CREATE DATABASE y USE
 nano Creaciones/01-biblioteca.sql
-# Asegurarse que tenga al inicio:
-# USE biblioteca;
-# o
+# Debe tener al inicio:
 # CREATE DATABASE IF NOT EXISTS biblioteca;
 # USE biblioteca;
 
-# 4. Actualizar .env
-nano .env
-# Cambiar la línea:
-DB_NAME=biblioteca
-
-# 5. Preparar
-./scripts/preparar.sh
-
-# 6. Reiniciar
+# 4. Reiniciar el contenedor
 docker compose down -v
 docker compose up -d
+```
 
-# 7. Verificar
-docker logs bbdd_alumnos --tail 30
+**¡Eso es todo!** El sistema detecta automáticamente el nuevo schema y configura los permisos.
+
+## Método 2: Script Asistido
+
+```bash
+# 1. Ejecutar el script asistente
+./scripts/agregar-bd.sh
+
+# El script te preguntará información y copiará el archivo automáticamente
+
+# 2. Reiniciar el contenedor
+docker compose down -v
+docker compose up -d
 ```
 
 ## Múltiples Bases de Datos en Creaciones/
@@ -72,26 +47,22 @@ Si tienes varios archivos SQL en `Creaciones/`:
 
 ```
 Creaciones/
-├── 01-tienda-calzado.sql
-├── 02-biblioteca.sql
-├── 03-hospital.sql
-└── ZZ-create-user.sql (generado automáticamente)
+├── 00-setup.sh               ← Detecta schemas automáticamente
+├── 01-tienda-calzado.sql     ← Schema: tienda_calzado
+├── 02-biblioteca.sql         ← Schema: biblioteca
+├── 03-hospital.sql           ← Schema: hospital
+└── ZZZ-create-user.sql       ← Generado automáticamente
 ```
 
-**Solo se activará la base de datos especificada en `.env`:**
+**Todos los schemas se despliegan simultáneamente:**
 
 ```bash
-# Para usar biblioteca:
-# En .env:
-DB_NAME=biblioteca
-
-# Preparar y desplegar:
-./scripts/preparar.sh
+# Simplemente reinicia el contenedor
 docker compose down -v
 docker compose up -d
 ```
 
-**Los archivos SQL deben tener `USE nombre_bd;` para indicar qué base de datos usar.**
+**El sistema detecta automáticamente todos los schemas** y los alumnos tendrán acceso a todos ellos.
 
 ## Ejemplo Completo de Archivo SQL
 
@@ -151,37 +122,35 @@ INSERT INTO prestamos (id_libro, nombre_usuario, fecha_prestamo, fecha_devolucio
 (3, 'Carlos López', '2024-02-15', '2024-02-22');
 ```
 
-## Cambiar Entre Bases de Datos
+## Acceder a Diferentes Schemas
 
-```bash
-# Cambiar de tienda_calzado a biblioteca
-nano .env
-# Cambiar: DB_NAME=biblioteca
+Con el sistema automatizado, **todos los schemas están disponibles simultáneamente**. Los alumnos pueden cambiar entre ellos usando SQL:
 
-./scripts/preparar.sh
-docker compose down -v
-docker compose up -d
+```sql
+-- Ver todos los schemas disponibles
+SHOW DATABASES;
 
-# Cambiar de vuelta a tienda_calzado
-nano .env
-# Cambiar: DB_NAME=tienda_calzado
+-- Cambiar a biblioteca
+USE biblioteca;
+SHOW TABLES;
+SELECT * FROM libros;
 
-./scripts/preparar.sh
-docker compose down -v
-docker compose up -d
+-- Cambiar a tienda_calzado
+USE tienda_calzado;
+SHOW TABLES;
+SELECT * FROM TIENDAS;
 ```
 
-## Verificar Qué Base de Datos Está Activa
+No necesitas reiniciar el contenedor para cambiar entre schemas.
+
+## Verificar Schemas Disponibles
 
 ```bash
-# Método 1: Ver el archivo .env
-cat .env | grep DB_NAME
-
-# Método 2: Conectarse y verificar
+# Ver todos los schemas
 docker exec -it bbdd_alumnos mysql -udam -pdam123 -e "SHOW DATABASES;"
 
-# Método 3: Ver las tablas de la base de datos actual
-docker exec -it bbdd_alumnos mysql -udam -pdam123 -e "USE $(grep DB_NAME .env | cut -d'=' -f2); SHOW TABLES;"
+# Ver las tablas de un schema específico
+docker exec -it bbdd_alumnos mysql -udam -pdam123 -e "USE biblioteca; SHOW TABLES;"
 ```
 
 ## Consejos

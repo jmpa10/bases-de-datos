@@ -15,5 +15,6 @@ mysql_data/
 # macOS
 .DS_Store
 
-# Archivos generados automáticamente
+# Archivos generados automáticamente por el contenedor
 Creaciones/ZZ-create-user.sql
+Creaciones/ZZZ-create-user.sql

@@ -14,11 +14,12 @@ Simplemente coloca tus archivos SQL en la carpeta `Creaciones/`:
 
 ```
 Creaciones/
+├── 00-setup.sh               ← Detecta schemas automáticamente
 ├── tienda_calzado.sql       ← Schema: tienda_calzado
 ├── biblioteca.sql            ← Schema: biblioteca  
 ├── hospital.sql              ← Schema: hospital
 ├── escuela.sql               ← Schema: escuela
-└── ZZ-create-user.sql        ← Generado automáticamente
+└── ZZZ-create-user.sql       ← Generado automáticamente por 00-setup.sh
 ```
 
 ### 2. Formato de los Archivos SQL
@@ -37,31 +38,15 @@ CREATE TABLE autores (...);
 -- etc.
 ```
 
-### 3. Detección Automática
+### 3. Detección Automática ⚡
 
-Al ejecutar `./scripts/preparar.sh`, el script:
+Cuando ejecutas `docker compose up -d`, el script `Creaciones/00-setup.sh`:
+- ✅ Se ejecuta **automáticamente** antes que los archivos SQL
 - ✅ Escanea todos los archivos `.sql` en `Creaciones/`
 - ✅ Detecta automáticamente los schemas definidos
-- ✅ Genera permisos para el usuario en **TODOS** los schemas
+- ✅ Genera `ZZZ-create-user.sql` con permisos para el usuario en **TODOS** los schemas
 
-Ejemplo de salida:
-
-```bash
-$ ./scripts/preparar.sh
-
-🔍 Detectando schemas en archivos SQL...
-   ✅ Schemas detectados:
-      - tienda_calzado
-      - biblioteca
-      - hospital
-      - escuela
-
-📊 El usuario 'dam' tendrá acceso SELECT a:
-   - tienda_calzado
-   - biblioteca
-   - hospital
-   - escuela
-```
+**No necesitas ejecutar ningún script manualmente** - todo sucede automáticamente al iniciar el contenedor.
 
 ## Uso por los Alumnos
 

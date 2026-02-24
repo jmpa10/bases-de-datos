@@ -35,6 +35,8 @@ cp /ruta/a/tu/archivo.sql Creaciones/
 ../scripts/agregar-bd.sh
 ```
 
+**⚡ Automatización**: El script `00-setup.sh` detectará automáticamente el nuevo schema al reiniciar el contenedor. No necesitas ejecutar nada manualmente.
+
 ## ⚠️ Importante
 
 - **Todos los archivos SQL deben incluir `CREATE DATABASE ... USE nombre_schema;`** al inicio
@@ -43,12 +45,12 @@ cp /ruta/a/tu/archivo.sql Creaciones/
   CREATE DATABASE IF NOT EXISTS nombre_schema;
   USE nombre_schema;
   ```
-- Para aplicar cambios, ejecuta:
+- Para aplicar cambios:
   ```bash
-  ../scripts/preparar.sh
   docker compose down -v
   docker compose up -d
   ```
+- **⚡ No necesitas ejecutar ningún script manualmente** - el sistema detecta automáticamente todos los schemas
 
 ## 🗑️ Eliminar una Base de Datos
 

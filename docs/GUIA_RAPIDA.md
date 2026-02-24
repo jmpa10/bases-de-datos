@@ -11,17 +11,13 @@ cp .env.example .env
 nano .env  # o vim, code, etc.
 ```
 
-### 2. Preparar y Desplegar
+### 2. Desplegar
 ```bash
-# Dar permisos a los scripts
-chmod +x preparar.sh agregar-bd.sh verificar.sh
-
-# Preparar archivos
-./scripts/preparar.sh
-
 # Levantar el servidor
 docker compose up -d
 ```
+
+**⚡ ¡Eso es todo!** El sistema detecta automáticamente todos los schemas y configura los permisos.
 
 ### 3. Verificar
 ```bash
@@ -30,26 +26,21 @@ docker compose up -d
 
 ## Agregar una Nueva Base de Datos
 
-### Opción A: Script Asistido 🎯
+### Proceso Simplificado ✨
 ```bash
-./scripts/agregar-bd.sh
-```
-
-### Opción B: Manual
-```bash
-# 1. Copiar tu archivo SQL
+# 1. Copiar tu archivo SQL (debe contener CREATE DATABASE y USE)
 cp /ruta/tu_base_datos.sql Creaciones/
 
-# 2. Editar .env
-nano .env
-# Cambiar: DB_NAME=nombre_tu_base_datos
-
-# 3. Preparar
-./scripts/preparar.sh
-
-# 4. Reiniciar contenedor
+# 2. Reiniciar contenedor
 docker compose down -v
 docker compose up -d
+```
+
+**⚡ ¡Automático!** El sistema detecta el nuevo schema y configura los permisos automáticamente.
+
+### Opción Alternativa: Script Asistido
+```bash
+./scripts/agregar-bd.sh
 ```
 
 ## Comandos Útiles
