@@ -96,13 +96,29 @@ fi
 # 🔥 EJECUTAR el archivo SQL generado inmediatamente
 echo "🔧 Ejecutando script de creación de usuario..."
 if [ -f "$SQL_DIR/ZZZ-create-user.sql" ]; then
-    # Ejecutar el SQL usando el comando mysql disponible durante la inicialización
-    # Durante docker-entrypoint, mysql está disponible con las credenciales
-    mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" < "$SQL_DIR/ZZZ-create-user.sql" 2>&1 | grep -v "Warning.*password"
-    if [ $? -eq 0 ]; then
+    # Esperar a que MySQL esté listo (usa socket unix durante init)
+    echo "   ⏳ Esperando a que MySQL esté listo..."
+    for i in {1..30}; do
+        if mysql --protocol=socket -uroot -p"${MYSQL_ROOT_PASSWORD}" -e "SELECT 1" >/dev/null 2>&1; then
+            echo "   ✅ MySQL está listo"
+            break
+        fi
+        if [ $i -eq 30 ]; then
+            echo "   ⚠️  Timeout esperando a MySQL"
+            exit 1
+        fi
+        sleep 1
+    done
+    
+    # Ejecutar el SQL usando socket unix (más confiable durante init)
+    echo "   📝 Creando usuario y permisos..."
+    if mysql --protocol=socket -uroot -p"${MYSQL_ROOT_PASSWORD}" < "$SQL_DIR/ZZZ-create-user.sql" 2>&1 | grep -v "Warning.*password"; then
         echo "   ✅ Usuario y permisos configurados correctamente"
     else
         echo "   ⚠️  Hubo un problema al crear el usuario"
+        # Mostrar el contenido del archivo para debug
+        echo "   📄 Contenido de ZZZ-create-user.sql:"
+        cat "$SQL_DIR/ZZZ-create-user.sql"
     fi
 fi
 
