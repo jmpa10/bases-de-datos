@@ -1,8 +1,13 @@
 -- ============================================================
 -- BASE DE DATOS: CADENA DE TIENDAS DE CALZADO
 -- Compatible con: MySQL / MariaDB
--- SCRIPT COMPLETO Y CORREGIDO (v3)
+-- SCRIPT COMPLETO Y CORREGIDO (v4 - UTF-8)
 -- ============================================================
+
+-- Crear la base de datos con UTF-8
+CREATE DATABASE IF NOT EXISTS tienda_calzado
+    DEFAULT CHARACTER SET utf8mb4
+    DEFAULT COLLATE utf8mb4_unicode_ci;
 
 -- Usar la base de datos tienda_calzado
 USE tienda_calzado;
