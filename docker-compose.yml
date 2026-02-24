@@ -11,8 +11,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./Creaciones:/docker-entrypoint-initdb.d/01-data
-      - ./init-scripts:/docker-entrypoint-initdb.d/02-init
+      - ./Creaciones:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql
     networks:
       - db_network
